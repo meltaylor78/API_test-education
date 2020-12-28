@@ -12,14 +12,38 @@ function getData(type, cb) {
     xhr.open("GET", baseURL + type + "/");
     xhr.send();
 }
+function getTableHeaders(obj){
+    var tableHeaderes = [];
+
+    Object.keys(obj).forEach(function(key){
+        tableHeaderes.push(`<td>${key}</td>`)
+    });
+    return `<tr>${tableHeaderes}</tr>`
+}
 
 function writeToDocument(type) {
-    var el = document.getElementById("data")
+    var el = document.getElementById("data");
     el.innerHTML = "";
+}
+
+function writeToDocument(type) {
+    var tableRows = [];
+    var el = document.getElementById("data");
+
     getData(type, function(data) {
         data = data.results;
-        data.forEach(function(item){
-            el.innerHTML += "<p>" + item.name + "</p>";
-        })
+        var tableHeaders = getTableHeaders(data[0]);
+
+        data.forEach(function(item) {
+            var dataRow = [];
+            Object.keys(item).forEach(function(key) {
+                var rowData = item[key].toString();
+                var truncatedData = rowData.substring(0, 15);
+                dataRow.push(`<td>${truncatedData}</td>`);
+            });
+            tableRows.push(`<tr>${dataRow}</tr>`)
+        });
+
+        el.innerHTML = `<table>${tableHeaders}${tableRows}</table>`;
     });
 }
